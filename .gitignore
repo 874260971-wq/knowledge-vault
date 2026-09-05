@@ -37,3 +37,6 @@ $RECYCLE.BIN/
 
 # ---------- 画板备份（Obsidian Canvas 主文件 .base 保留）----------
 *.base.bak
+
+# ---------- 本地素材仓(测试/实验用 Canvas 等不进 vault 共享)----------
+04_BUILD/素材/
