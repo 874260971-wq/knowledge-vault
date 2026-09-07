@@ -10,6 +10,9 @@
 .obsidian/cache/
 .obsidian/plugins/*/data.json
 .obsidian/plugins/obsidian-git/data.json
+# 社区插件代码本身不入库(main.js/manifest.json/styles.css 等,体积大且可重装);
+# 启用哪些插件由 .obsidian/community-plugins.json 记录即可。
+.obsidian/plugins/
 .trash/
 
 # ---------- WorkBuddy 项目记忆（不入 vault）----------
