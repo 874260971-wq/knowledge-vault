@@ -3,8 +3,7 @@
 # 同步 vault —— 一键把本地知识库推送到 GitHub 私有仓库
 # ------------------------------------------------------------
 # 用法(在 Git Bash 里运行):
-#     bash "E:/知识库自生长/知识库自生长/06_SYSTEM/同步vault.sh"
-#     或(英文路径快捷方式): bash "~/sync_vault.sh"
+#     bash "~/sync_vault.sh"
 #
 # 前提:
 #   1. 已切手机热点(家用 WiFi 透明代理会封 git 443/掐 SSH 长连接)
@@ -12,7 +11,7 @@
 #
 # 做的事:
 #   暂存全部改动 → 提交(带当天日期) → 走 SSH 推送到 knowledge-vault
-#   → 验证本地不再领先云端(避免"假成功")
+#   → fetch 更新 origin/main 引用 → 验证 ahead 数(避免假成功/假阴性)
 # ============================================================
 set -eu
 
@@ -41,8 +40,14 @@ fi
 echo "▶ [3/4] 推送(SSH)..."
 GIT_SSH_COMMAND="$SSH_OPTS" git push "$REMOTE_SSH" main
 
-# --- 4/4 验证(防止"假成功":push 报错时 set -e 会先退出)---
-echo "▶ [4/4] 验证推送结果..."
+# --- 4/4 fetch 更新 origin/main + 验证(必须 SSH,否则引用过时)---
+echo "▶ [4/4] fetch + 验证推送结果..."
+GIT_SSH_COMMAND="$SSH_OPTS" git fetch "$REMOTE_SSH" main:refs/remotes/origin/main 2>/dev/null || {
+  echo ""
+  echo "⚠️  fetch 失败(SSH 可能被掐),无法验证 ahead/behind"
+  echo "    但 push 步骤已成功(exit 0),请到 GitHub 网页端确认"
+  exit 1
+}
 AHEAD=$(git rev-list --left-right --count HEAD...origin/main 2>/dev/null | awk '{print $1}')
 if [ "${AHEAD:-0}" = "0" ]; then
   echo ""
